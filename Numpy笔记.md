@@ -107,3 +107,4 @@ b = np.array([1,2,3])
 x = np.linalg.solve(A,b)
 ```
 
+##### 特征值是方程式的标量解
