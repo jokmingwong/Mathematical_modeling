@@ -1,7 +1,9 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 '''运用的是numpy里面的linalg包'''
 
+'''
 A = np.mat("1 5;-2 -7")
 # 上面的双引号里面吗不要加多余的分号
 b = np.array([7, -5])
@@ -34,3 +36,14 @@ print(np.median(number))
 print(np.linalg.eigvals(A))
 # 返回一个array表示特征值，一个matrix表示特征向量
 print(np.linalg.eig(A))
+'''
+
+# 正态分布
+N = 10000
+t = np.arange(-5.00, 5.00)
+plt.xlim(-5.00, 5.00)
+sigma = 1
+mu = 0
+y = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(t - mu) ** 2 / (2 * sigma ** 2))
+plt.plot(t, y)
+plt.show()
