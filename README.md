@@ -1,2 +1,3 @@
-# pythonMathModel
-## These are some codes about python module making.
+# README
+
+一些用于数学建模的代码，包括线性代数，概率统计和优化问题。
