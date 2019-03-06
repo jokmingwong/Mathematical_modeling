@@ -2,7 +2,7 @@
 
 ## 摘要
 
-##背景
+## 背景
 
 ## 模型假设
 
@@ -22,11 +22,11 @@
 
    则运送过程中需要满足以下的条件
 
-   （1）![img](file:///C:\Users\yogurt\AppData\Local\Temp\ksohtml7016\wps1.png)
+   （1）$ mer \in [0,3]$
 
-   （2）![img](file:///C:\Users\yogurt\AppData\Local\Temp\ksohtml7016\wps2.png)
+   （2）$ser \in [0,3]$
 
-   （3）![img](file:///C:\Users\yogurt\AppData\Local\Temp\ksohtml7016\wps3.png)
+   （3）$state[mer][ser]$ 
 
 ##### 模型：无向图结构模型
 
