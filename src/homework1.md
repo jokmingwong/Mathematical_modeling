@@ -55,7 +55,7 @@
 
 #### 代码
 
-```java
+```cpp
 #include"pch.h"
 #include <cstdio>
 #include<iostream>
