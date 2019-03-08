@@ -54,25 +54,55 @@
 
 
 
-利用了C++中完善的STL库实现了这个模拟。
+利用了C++中完善的STL库实现了这个模拟：
+
+**1.设置初始状态类**，并且重载这个类的运算符同时建立这个类的构造函数。
+
+这个状态可以表示在南岸/北岸的商人和随从的人数，和转移的人数。
+
+如在南岸的人数为[2,3]，表示南岸有2个商人和3个随从。
+
+小船转移人数为[1,1]，表示船上有1个商人和1个随从。
 
 ```cpp
-#include<cstdio>
-#include<vector>
-#include<unordered_set>
-using namespace std;
-struct Status {
-	int x, y;
-	Status operator+(const Status s) {
+struct Status{
+    int x,y;
+    Status operator+(const Status s) {
 		return { x + s.x,y + s.y };
 	}
 	Status operator-(const Status s) {
 		return { x - s.x,y - s.y };
 	}
 	Status(const int _x, const int _y):x(_x), y(_y){};
-};
+}
+```
+
+同时小船状态的转移共有五种可能:
+
+即
+
+$$ Status=\left\{
+\begin{aligned}
+ & [1,0],[2,0],[1,1],[0,1],[0,2](MovingSouth) \\
+ & [-1,0],[-2,0],[-1,-1],[0,-1],[0,-2](MovingNorth)
+\end{aligned}
+\right.  ​$$
 
 
+
+**2.有个判断方向的布尔值，根据状态变化而变化**
+
+```cpp
+bool isMovingNorth;
+```
+
+若布尔值为true则表示小船往北，若布尔值为false则说明小船正在往南。
+
+**3.利用栈数据结构记录路径和递归寻找正确路径**
+
+首先自定义了一个`Stack`，与STL库自带的Stack不同的地方在于，自定义的Stack新增了方法`void showPath()`，表示从底部到顶部输出栈的内容。
+
+```cpp
 class PathStack {
 public:
 	PathStack() {
@@ -92,26 +122,17 @@ public:
 private:
 	vector<Status>ll;
 };
-// record the direction
-const static Status MoveNorth[5] = { {-1,0},{-1,-1},{-2,0},{0,-1},{0,-2} };
-const static Status MoveSouth[5] = { {1,0},{1,1},{2,0},{0,1},{0,2} };
-// record the correct path
-PathStack path;
-// record the status and construct a hash function
-bool operator==(const Status& s1, const Status& s2) {
-	return s1.x == s2.x&&s1.y == s2.y;
-}
-struct StatusHash {
-	size_t operator()(const Status& _s)const {
-		return hash<int>()(10 * _s.x + _s.y);
-	}
-};
-unordered_set<Status,StatusHash>status_mark;
+```
+
+递归寻找路径,下图为初始南岸为[2,2]的例子，当遇到过河不成功的结果，则返回。
+
+![递归树](StatusTree.jpg)
 
 
-// the number of the bussinessman and the servant
-int N;
-bool PathIsFound = false;
+
+类似树的中序遍历或者图的BFS，递归方法生成寻找的过程。
+
+```cpp
 void CrossRiver(Status cur,bool isMovingNorth) {
 	if (cur.x == 0 && cur.y == 0) {
 		PathIsFound = true;
@@ -140,21 +161,9 @@ void CrossRiver(Status cur,bool isMovingNorth) {
 		}
 	}
 }
-
-int main() {
-	printf("Input the number of bussinessmans and the servants:\n");
-	scanf("%d", &N);
-	path = *(new PathStack());
-	Status current = { N,N };
-	CrossRiver(current, true);
-	printf("Not found!\n");
-	return 0;
-}
 ```
 
-
-
-
+回溯方法相对直观，利用了计算机强大的计算能力。但是当遇到数量比较多的商人对的时候不方便模拟。在回溯模型上进行了优化，得出下面的无向图结构模型。
 
 
 
@@ -272,8 +281,6 @@ int main()
 
 
 ## 优点和缺点
-
-## 优点和缺点
 ### 回溯分析模型优缺点分析
 #### 优点
  1. 建模过程思路清晰，更容易入手
@@ -283,7 +290,7 @@ int main()
 
 #### 缺点
 当变量（商人、仆人人数）过大时，时间成本太高，输出结果过于繁杂，输出大量目标结论以外的不必要信息。
- 
+
 ### 无向图结构模型优缺点分析
 #### 优点
 1. 抽象模型深层更深，更集中于问题的本质，模型更加优美
@@ -298,4 +305,106 @@ int main()
 
 
 ## 总结
+
+
+
+## 附录
+
+回溯解法C++代码
+
+```cpp
+#include<cstdio>
+#include<vector>
+#include<unordered_set>
+using namespace std;
+struct Status {
+	int x, y;
+	Status operator+(const Status s) {
+		return { x + s.x,y + s.y };
+	}
+	Status operator-(const Status s) {
+		return { x - s.x,y - s.y };
+	}
+	Status(const int _x, const int _y):x(_x), y(_y){};
+};
+
+
+class PathStack {
+public:
+	PathStack() {
+		ll.clear();
+	}
+	void push(Status s) {
+		ll.push_back(s);
+	}
+	void pop() {
+		ll.pop_back();
+	}
+	void showPath() {
+		for (Status s : ll) {
+			printf("(%d,%d)\n");
+		}
+	}
+private:
+	vector<Status>ll;
+};
+// record the direction
+const static Status MoveNorth[5] = { {-1,0},{-1,-1},{-2,0},{0,-1},{0,-2} };
+const static Status MoveSouth[5] = { {1,0},{1,1},{2,0},{0,1},{0,2} };
+// record the correct path
+PathStack path;
+// record the status and construct a hash function
+bool operator==(const Status& s1, const Status& s2) {
+	return s1.x == s2.x&&s1.y == s2.y;
+}
+struct StatusHash {
+	size_t operator()(const Status& _s)const {
+		return hash<int>()(10 * _s.x + _s.y);
+	}
+};
+unordered_set<Status,StatusHash>status_mark;
+
+
+// the number of the bussinessman and the servant
+int N;
+bool PathIsFound = false;
+void CrossRiver(Status cur,bool isMovingNorth) {
+	if (cur.x == 0 && cur.y == 0) {
+		PathIsFound = true;
+		printf("Found it and the move status are below:\n");
+		path.showPath();
+		system("pause");
+	}
+	// it meet the demand and never happen before
+	if (status_mark.find(cur) == status_mark.end()&&cur.x>=cur.y&&N-cur.x>=N-cur.y&&cur.x>=0&&cur.y>=0&&cur.x) {
+		status_mark.insert(cur);
+		path.push(cur);
+		if (isMovingNorth) {
+			int i;
+			for (i = 0; i < 5; i++) {
+				CrossRiver(cur + MoveNorth[i], !isMovingNorth);
+			}
+			if (!PathIsFound)path.pop();
+		}
+		else {
+			int i;
+			for (i = 0; i < 5; i++) {
+				CrossRiver(cur + MoveSouth[i], isMovingNorth);
+			}
+			if (!PathIsFound)path.pop();
+
+		}
+	}
+}
+
+int main() {
+	printf("Input the number of bussinessmans and the servants:\n");
+	scanf("%d", &N);
+	path = *(new PathStack());
+	Status current = { N,N };
+	CrossRiver(current, true);
+	printf("Not found!\n");
+	return 0;
+}
+```
 
