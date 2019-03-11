@@ -186,7 +186,7 @@ void CrossRiver(Status cur,bool isMovingNorth) {
 | 运送方案                                       | 二维向量`grid[before][after]`     | 无向图结构中的边               |
 | 可运送的商人与仆人人数组合                     | 两个一维向量，cmer，cser          | 无向图结构中边上允许的流量流动 |
 
-![](C:\Users\yogurt\Pictures\无向图.jpg)
+![](Graph.PNG)
 
 ***模型中的逻辑结构***
 
@@ -256,120 +256,39 @@ void CrossRiver(Status cur,bool isMovingNorth) {
    变量after索引到此次运送之后的商人仆人的人数情况
 
    变量before,after共同索引到无向图中的可行方案
-
    
-
-#### 代码
-
-```cpp
-#include"pch.h"
-#include <cstdio>
-#include<iostream>
-#define maxn 100
-
-using namespace std;
-int num;
-int grid[maxn*maxn][maxn*maxn];
-int state[maxn][maxn];
-
-int cmer[5] = { 2, 1, 0, 1, 0 };
-int cser[5] = { 0, 1, 2, 0, 1 };
-int mstep[maxn*maxn];
-int sstep[maxn*maxn];
-
-
-bool flag = false;
-void DFS(int mer, int ser, int step, int dir)
-{
-	mstep[step] = mer, sstep[step] = ser;
-	if (mer == 0 && ser == 0)
-	{
-		for (int i = 0; i <= step; i++)
-		{
-			printf("(%d,%d)", mstep[i], sstep[i]);
-			if (i != step)
-				printf(" -> ");
-		}
-		printf("\n");
-		flag = true;
-	}
-	int before = mer * (num + 1) + ser;
-	for (int i = 0; i < 5; i++)
-	{
-		if (dir) {
-			int mnext = mer - cmer[i], snext = ser - cser[i];
-			if (mnext >= 0 && mnext < num + 1 && snext >= 0 && snext < num + 1 && state[mnext][snext])
-			{
-				int after = mnext * (num + 1) + snext;
-				if (!grid[before][after] && !grid[after][before])
-				{
-					grid[before][after] = 1;
-					grid[after][before] = 1;
-					DFS(mnext, snext, step + 1, !dir);
-					grid[before][after] = 0;
-					grid[before][after] = 0;
-				}
-			}
-		}
-		else {
-			int mnext = mer + cmer[i], snext = ser + cser[i];
-			if (mnext >= 0 && mnext < num + 1 && snext >= 0 && snext < num + 1 && state[mnext][snext])
-			{
-				int after = mnext * (num + 1) + snext;
-				if (!grid[before][after] && !grid[after][before])
-				{
-					grid[before][after] = 1;
-					grid[after][before] = 1;
-					DFS(mnext, snext, step + 1, !dir);
-					grid[before][after] = 0;
-					grid[before][after] = 0;
-				}
-			}
-		}
-	}
-}
-int main()
-{
-	cin >> num;
-	for (int i = 0; i < num + 1; i++)
-	{
-		state[i][0] = 1;
-		state[i][num] = 1;
-		state[i][i] = 1;
-	}
-	DFS(num, num, 0, 1);
-	if (!flag)
-		printf("they can't cross the river.");
-}
-```
-
-
 
 ## 优点和缺点
 ### 回溯分析模型优缺点分析
-#### 优点
- 1. 建模过程思路清晰，更容易入手
- 2. 所得模型更加直观易懂
- 3. 确保模型遍历了整个过程，可以满足对任意一种状态的集中观察和输出
- 4. 便于观察变量对整个过程带来的影响
+### 优点
 
-#### 缺点
+  1. 建模过程思路清晰，更容易入手。所得模型更加直观易懂。
+  2. 确保模型遍历了整个过程，可以满足对任意一种状态的集中观察和输出。
+  3. 便于观察变量对整个过程带来的影响。
+
+### 缺点
+
 当变量（商人、仆人人数）过大时，时间成本太高，输出结果过于繁杂，输出大量目标结论以外的不必要信息。
 
+
+
 ### 无向图结构模型优缺点分析
-#### 优点
+
+### 优点
+
 1. 抽象模型深层更深，更集中于问题的本质，模型更加优美
 2. 时间复杂度较低，减少不不必要状态的遍历，对更复杂的问题具有良好的适应性，能够轻松解决更复杂的数据量
 3. 以无向图为状态映射，可以从侧面直观看出某一种状态之间的可能关系和转移结果
 
-#### 缺点
+### 缺点
+
 模型更加抽象，在建模阶段可能较为复杂，不易思考，不利于观察较小数量级下的每一种状态。
 
+
+
 ### 优缺点分析总结
+
 从模型方法来说，回溯分析模型较为简单易懂，但也存在模型臃肿冗余的问题；无向图结构模型相对更加抽象复杂，但无疑模型更加优美，在数据量较大的情况下是上佳之选。对于本次讨论主题，3个商人和3个仆人的情况下，两种模型的差距较小。
-
-
-## 总结
 
 
 
@@ -470,6 +389,88 @@ int main() {
 	CrossRiver(current, true);
 	printf("Not found!\n");
 	return 0;
+}
+```
+
+图模型代码
+```cpp
+#include <cstdio>
+#include<iostream>
+#define maxn 100
+
+using namespace std;
+int num;
+int grid[maxn*maxn][maxn*maxn];
+int state[maxn][maxn];
+
+int cmer[5] = { 2, 1, 0, 1, 0 };
+int cser[5] = { 0, 1, 2, 0, 1 };
+int mstep[maxn*maxn];
+int sstep[maxn*maxn];
+
+
+bool flag = false;
+void DFS(int mer, int ser, int step, int dir)
+{
+	mstep[step] = mer, sstep[step] = ser;
+	if (mer == 0 && ser == 0)
+	{
+		for (int i = 0; i <= step; i++)
+		{
+			printf("(%d,%d)", mstep[i], sstep[i]);
+			if (i != step)
+				printf(" -> ");
+		}
+		printf("\n");
+		flag = true;
+	}
+	int before = mer * (num + 1) + ser;
+	for (int i = 0; i < 5; i++)
+	{
+		if (dir) {
+			int mnext = mer - cmer[i], snext = ser - cser[i];
+			if (mnext >= 0 && mnext < num + 1 && snext >= 0 && snext < num + 1 && state[mnext][snext])
+			{
+				int after = mnext * (num + 1) + snext;
+				if (!grid[before][after] && !grid[after][before])
+				{
+					grid[before][after] = 1;
+					grid[after][before] = 1;
+					DFS(mnext, snext, step + 1, !dir);
+					grid[before][after] = 0;
+					grid[before][after] = 0;
+				}
+			}
+		}
+		else {
+			int mnext = mer + cmer[i], snext = ser + cser[i];
+			if (mnext >= 0 && mnext < num + 1 && snext >= 0 && snext < num + 1 && state[mnext][snext])
+			{
+				int after = mnext * (num + 1) + snext;
+				if (!grid[before][after] && !grid[after][before])
+				{
+					grid[before][after] = 1;
+					grid[after][before] = 1;
+					DFS(mnext, snext, step + 1, !dir);
+					grid[before][after] = 0;
+					grid[before][after] = 0;
+				}
+			}
+		}
+	}
+}
+int main()
+{
+	cin >> num;
+	for (int i = 0; i < num + 1; i++)
+	{
+		state[i][0] = 1;
+		state[i][num] = 1;
+		state[i][i] = 1;
+	}
+	DFS(num, num, 0, 1);
+	if (!flag)
+		printf("they can't cross the river.");
 }
 ```
 
