@@ -1,6 +1,11 @@
-# 第一次作业
+# 数学建模第一次作业
+
+黄钰铭 彭婧 孙雁南 李楠
+
+
 
 ## 摘要
+
 本文主要研究多个商人安全过河问题，通过回溯分析模型和无向图结构模型对问题建立模型，对问题进行求解。
 安全过河问题可以视作一个多步决策过程，每一步，即船由北岸驶向南岸或从南岸驶回北岸，都要对船上人员作出决策，在保证安全的前提下，在有限步内使全部人员都到达南岸。本文两个模型均通过状态表示商人和随从的数量，决策船上人员情况，在题目允许的条件范围内，确定每一步决策，达到渡河的目标。
 
@@ -11,25 +16,23 @@
 
 ## 模型假设
 
-  (扯一下仆人下不下船的临界条件)
-
-
-
 提出假设：（以商人数是3人为例）
 
 1. 商人和仆人从北岸出发，目的地是南岸
 
-2. `mer`表示某次运送前北岸商人的人数，`ser`表示某次运送前仆人的人数，
+2. 不管决策如何，商人或者仆人都需要先到岸再派个人上岸回程
 
-3. `mnext`和`snext`分别表示某次运送后北岸商人的数量，北岸仆人的数量
+3. `mer`表示某次运送前北岸商人的人数，`ser`表示某次运送前仆人的人数，
+
+4. `mnext`和`snext`分别表示某次运送后北岸商人的数量，北岸仆人的数量
 
    则运送过程中需要满足以下的条件
 
-   （1）$ mer \in [0,3]$
+   （1）$ mer \in [0,3]​$
 
    （2）$ser \in [0,3]​$
 
-   （3）$state[mer][ser]$ 
+   （3）$state[mer][ser]​$ 
 
 ## 模型建立
 
@@ -45,11 +48,11 @@
 
    $CurrentStatus.x \ge 0 \and CurrentStatus.y \ge 0$
 
-   $(CurrentStatus.x\ge CurrentStatus.y \and CurentStatus.x \neq 0 )\or (CurrentStatus.x = 0)$
+   $(CurrentStatus.x\ge CurrentStatus.y \and CurentStatus.x \neq 0 )\or (CurrentStatus.x = 0)​$
 
 2. 同时在河的北岸也要保证商人存活且不存在负数个人数的情况，保证如下北岸商人存活的等式:
 
-   $CurrentStatus.x \ge 0 \and CurrentStatus.y \ge0 ​$ 
+   $N-CurrentStatus.x \ge 0 \and N-CurrentStatus.y \ge0 ​$ 
 
    $(N-CurrentStatus.x \ge N-CurrentStatus.y \and N-CurrentStatus.x \neq 0) \or (N-CurrentStatus.x = 0))$
 
@@ -102,6 +105,8 @@ bool isMovingNorth;
 ```
 
 若布尔值为true则表示小船往北，若布尔值为false则说明小船正在往南。
+
+
 
 **3.利用栈数据结构记录路径和递归寻找正确路径**
 
@@ -178,7 +183,7 @@ void CrossRiver(Status cur,bool isMovingNorth) {
 
 
 
-***建模思路***
+**建模思路**
 
 | 概念模型                                       | 逻辑模型                          | 抽象模型                       |
 | ---------------------------------------------- | --------------------------------- | ------------------------------ |
@@ -188,7 +193,7 @@ void CrossRiver(Status cur,bool isMovingNorth) {
 
 ![](Graph.PNG)
 
-***模型中的逻辑结构***
+​                                                                          **模型中的逻辑结构**
 
 
 
@@ -258,7 +263,10 @@ void CrossRiver(Status cur,bool isMovingNorth) {
    变量before,after共同索引到无向图中的可行方案
    
 
+
+
 ## 优点和缺点
+
 ### 回溯分析模型优缺点分析
 ### 优点
 
